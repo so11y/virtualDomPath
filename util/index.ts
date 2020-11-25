@@ -1,4 +1,4 @@
-import { CreateRealDom, CreateRealTextDom, HtmlAttribute, HtmlAttributeTagList } from "../types/dom";
+import { CreateRealDom, CreateRealTextDom, HtmlAttribute, HtmlAttributeTagList, addEventListener, updateAddEventListener } from "../types/dom";
 import { isEqual, isNoEqual, isString, Ivnode, pathClass, pathStyle, pathText, isArray } from "../types/vnode";
 type children = Pick<Ivnode, "children">["children"];
 type domTag = Pick<Ivnode, "tag">["tag"];
@@ -77,6 +77,7 @@ function walkPath(ordVnode: vnode, newVnode: vnode) {
 
     let ordVnodeInstance = ordVnode.vnode;
     let newVnodeInstance = newVnode.vnode;
+    
     if (isArray(ordVnodeInstance.children) && isArray(newVnodeInstance.children)) {
         //如果子节点都替换了,就直接结束
         if (elementEqualTagPath(ordVnode, newVnode)) return
@@ -138,10 +139,14 @@ function elementEqualTagPath(ordVnode: vnode, newVnode: vnode): boolean {
         if (isEqual(ordVnodeInstance, newVnodeInstance, "class")) pathClass(ordVnode, newVnode);
         //style打补丁
         if (isEqual(ordVnodeInstance, newVnodeInstance, "style")) pathStyle(ordVnode, newVnode);
+
+        //event必定要判断一次
+        updateAddEventListener(ordVnode.vnode, newVnode.vnode, ordVnode.vnode.realDom);
+
         //新vnode是数组
         if (isEqual(ordVnodeInstance, newVnodeInstance, "children") && isString(newVnodeInstance.children)) pathText(ordVnode, newVnode)
         //老vnode是string 新vnode是数组
-        else if(isString(ordVnodeInstance.children) && isArray(newVnodeInstance.children)){
+        else if (isString(ordVnodeInstance.children) && isArray(newVnodeInstance.children)) {
             ordVnode.vnode = newVnode.vnode;
             ordVnodeInstance.realDom.replaceWith(render(ordVnode));
         }

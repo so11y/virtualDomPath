@@ -18,14 +18,43 @@ export function CreateRealDom(tag: string, readHtmlAttribute: HtmlAttribute): HT
                 dom.style.cssText = readHtmlAttribute[attribute];
                 break;
             case "on":
-                Object.keys(readHtmlAttribute.on).forEach((eventName) => {
-                    dom.addEventListener(eventName, readHtmlAttribute.on[eventName])
-                })
+                addEventListener(readHtmlAttribute.on, dom);
                 break;
         }
 
     })
     return dom;
+}
+
+export function addEventListener(event: Partial<Ievent>, dom: HTMLElement) {
+    Object.keys(event).forEach((eventName) => {
+        dom.addEventListener(eventName, event[eventName])
+    })
+}
+
+function removeAddEventListener(event: Partial<Ievent>, dom: HTMLElement) {
+    Object.keys(event).forEach((eventName) => {
+        dom.removeEventListener(eventName, event[eventName])
+    })
+}
+
+export function updateAddEventListener(ordVnode: Ivnode, newVnode: Ivnode, dom: HTMLElement) {
+    //老vnode没有事件,新vnode有事件
+    if (!ordVnode.on && newVnode.on) {
+        ordVnode.on = newVnode.on;
+        addEventListener(newVnode.on, dom);
+    }
+    //老vnode存在,新vnode也存在 先删除事件 在创建事件
+    else if (ordVnode.on && newVnode.on) {
+        removeAddEventListener(ordVnode.on, dom);
+        addEventListener(newVnode.on, dom);
+        ordVnode.on = newVnode.on;
+    }
+    //老vnode事件存在 新vnode存在
+    else if (ordVnode.on && !newVnode.on) {
+        removeAddEventListener(ordVnode.on, dom);
+        ordVnode.on = null;
+    }
 }
 
 export function CreateRealTextDom(parentDom: HTMLElement, text: string) {
