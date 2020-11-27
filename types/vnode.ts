@@ -6,6 +6,7 @@ export interface Ievent {
 export interface Ivnode {
     tag: string;
     id?: string;
+    key?: string | number;
     realDom?: HTMLElement;
     style?: string;
     class?: string | Array<string>;
@@ -28,7 +29,7 @@ export function pathStyle(ordVnode: vnode, newVnode: vnode) {
     let ordVnodeInstance = ordVnode.vnode;
     let newVnodeInstance = newVnode.vnode;
     ordVnodeInstance.style = newVnodeInstance.style;
-    ordVnodeInstance.realDom.style.cssText =  ordVnodeInstance.style;
+    ordVnodeInstance.realDom.style.cssText = ordVnodeInstance.style;
 }
 
 
@@ -39,20 +40,28 @@ export function pathText(ordVnode: vnode, newVnode: vnode) {
     ordVnodeInstance.realDom.innerText = ordVnodeInstance.children as string
 }
 
-export function isEqual(after:any,before:any,key:string):boolean{
+export function isEqual(after: any, before: any, key: string): boolean {
     return after[key] != before[key];
 }
 
 
-export function isNoEqual(after:any,before:any,key:string):boolean{
+export function isNoEqual(after: any, before: any, key: string): boolean {
     return after[key] == before[key];
 }
 
 
-export function isString(compare:any):compare is string{
-    return typeof compare  == "string"
+export function isString(compare: any): compare is string {
+    return typeof compare == "string"
 }
 
-export function isArray<T>(arr:any):arr is Array<T>{
+export function isArray<T>(arr: any): arr is Array<T> {
     return Array.isArray(arr);
+}
+
+export function isObject(obj: any) {
+    return Object.prototype.toString.call(obj) == "[object Object]";
+}
+
+export function noNull(value:any){
+    return value !== null && value !== undefined;
 }

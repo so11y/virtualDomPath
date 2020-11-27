@@ -1,5 +1,5 @@
-import { CreateRealDom, CreateRealTextDom, HtmlAttribute, HtmlAttributeTagList, addEventListener, updateAddEventListener } from "../types/dom";
-import { isEqual, isNoEqual, isString, Ivnode, pathClass, pathStyle, pathText, isArray } from "../types/vnode";
+import { CreateRealDom, CreateRealTextDom, HtmlAttribute, HtmlAttributeTagList, updateAddEventListener } from "../types/dom";
+import { isEqual, isNoEqual, isString, Ivnode, pathClass, pathStyle, pathText, isArray, isObject, noNull } from "../types/vnode";
 type children = Pick<Ivnode, "children">["children"];
 type domTag = Pick<Ivnode, "tag">["tag"];
 type vnodeOptions = Omit<Ivnode, "tag" | "children">
@@ -9,14 +9,33 @@ export class vnode {
     public vnode: Ivnode;
     public _isRoot: boolean = false;
     public _parent: vnode;
+    private TRAIT: Array<string> = ["class", "style", "on", 'tag', 'key'];
     constructor(tag: domTag, vnodeOptions: vnodeOptions = {}, children: children) {
-        if (!Array.isArray(children) && typeof children != "string") children = [children];
-
         this.vnode = {
             tag,
             ...vnodeOptions,
             children
         };
+    }
+
+    public get key(): string {
+        let onlyTag: Array<string> = ["tag"];
+        let vnodeTRAIT = Object.keys(this.vnode).filter(i => this.TRAIT.includes(i));
+
+        if (vnodeTRAIT.every((i) => {
+            return onlyTag.includes(i);
+        })) {
+            return;
+        }
+
+        let btoaStr = vnodeTRAIT.map((i) => {
+            if (isObject(this.vnode[i])) {
+                return Object.keys(this.vnode[i]).join("")
+            }
+            return this.vnode[i]
+        }).join("")
+
+        return btoa(btoaStr)
     }
 }
 
@@ -66,8 +85,6 @@ export function CreateRootVnode(tag: domTag, vnodeOptions: vnodeOptions = {}, ch
     return rootVnode;
 }
 
-
-
 export function diffVnodePath(ordVnode: vnode, newVnode: vnode) {
     walkPath(ordVnode, newVnode);
 }
@@ -77,10 +94,18 @@ function walkPath(ordVnode: vnode, newVnode: vnode) {
 
     let ordVnodeInstance = ordVnode.vnode;
     let newVnodeInstance = newVnode.vnode;
-    
+
+    // if (
+    //     noNull(ordVnode.key) &&
+    //     noNull(newVnode.key) &&
+    //     isNoEqual(ordVnode, newVnode, "key")
+    // ) {
+
+    // }
+    //如果子节点都替换了,就直接结束
+    if (elementEqualTagPath(ordVnode, newVnode)) return
+
     if (isArray(ordVnodeInstance.children) && isArray(newVnodeInstance.children)) {
-        //如果子节点都替换了,就直接结束
-        if (elementEqualTagPath(ordVnode, newVnode)) return
         //取新旧vnode当前children最长度 vnode数组在path过程中会变化,需要重新计算
         //let length = Math.max(newVnodeInstance.children.length, ordVnodeInstance.children.length);
         for (let i = 0; i <= Math.max(newVnodeInstance.children.length, ordVnodeInstance.children.length); i++) {
@@ -112,8 +137,7 @@ function walkPath(ordVnode: vnode, newVnode: vnode) {
                 walkPath(ordVnodeInstance.children[i], newVnodeInstance.children[i]);
             }
         }
-    } else
-        elementEqualTagPath(ordVnode, newVnode);
+    }
 }
 
 /**
@@ -143,9 +167,9 @@ function elementEqualTagPath(ordVnode: vnode, newVnode: vnode): boolean {
         //event必定要判断一次
         updateAddEventListener(ordVnode.vnode, newVnode.vnode, ordVnode.vnode.realDom);
 
-        //新vnode是数组
+        //新vnode是string
         if (isEqual(ordVnodeInstance, newVnodeInstance, "children") && isString(newVnodeInstance.children)) pathText(ordVnode, newVnode)
-        //老vnode是string 新vnode是数组
+        //新vnode是数组
         else if (isString(ordVnodeInstance.children) && isArray(newVnodeInstance.children)) {
             ordVnode.vnode = newVnode.vnode;
             ordVnodeInstance.realDom.replaceWith(render(ordVnode));
