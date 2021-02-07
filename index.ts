@@ -7,7 +7,7 @@ let vnodeInstance = cr("div", {
     h("div", {
         class: "head"
     }, [
-        h("div",{},"24235")
+        h("div",{},"242355")
     ]),
 
 ])
