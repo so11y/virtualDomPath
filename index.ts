@@ -7,14 +7,7 @@ let vnodeInstance = cr("div", {
     h("div", {
         class: "head"
     }, [
-        h("div", {
-            class: "title"
-        }, "我是标题"),
-        h("div", {}, "我是日期"),
-        h("div", {}, [
-            h("span", {}, "姓名："),
-            h("span", {}, "郑然")
-        ])
+        h("div",{},"24235")
     ]),
 
 ])
@@ -32,21 +25,6 @@ let newVnodeInstance = cr("div", {
         h("div", {},[
             h("div", {},"12"),
          ]),
-        h("div", {},""),
-        h("div", {},[
-           h("div", {},"11"),
-        ]),
-        h("div", {
-            class: "title"
-        }, "我是标题"),
-        h("div", {}, [
-            h("span", {}, [
-                h("div", {}, "姓"),
-                h("div", {}, "名"),
-                h("div", {}, ":"),
-            ]),
-            h("span", {}, "张三")
-        ])
     ]),
 ])
 
