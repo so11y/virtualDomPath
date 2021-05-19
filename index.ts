@@ -10,6 +10,7 @@ new Vue({
                 on: {
                     click() {
                         _this._data.b = 1010;
+                        _this._data.a = 1010;
                     }
                 }
             }, String(this._data.a)),

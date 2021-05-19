@@ -11,6 +11,14 @@ export function defineReactive<T extends {}>(data: T) {
 
 }
 
+let prmoseWork = Promise.resolve();
+
+function updateQuene(cb: () => void) {
+    prmoseWork = prmoseWork.then(cb).then(() => {
+        prmoseWork = Promise.resolve();
+    })
+}
+
 
 export class Watcher {
 
@@ -28,7 +36,9 @@ export class Watcher {
 
     update() {
         const newValue = this.cb();
-        diffVnodePath(this.vm.$vnode, cr("div", {}, newValue));
+        updateQuene(
+            () => diffVnodePath(this.vm.$vnode, cr("div", {}, newValue))
+        );
     }
 
     run() {
