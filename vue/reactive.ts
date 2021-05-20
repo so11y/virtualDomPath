@@ -12,7 +12,7 @@ export function defineReactive<T extends {}>(data: T) {
 
 //判断是否为响应式
 function isReactive<T extends Observe>(data: T, dep: Dep) {
-    if (data.__ob__) { return true }
+    if (data.__ob__) return
     if (!data.__ob__ && isObject(data)) {
         Object.defineProperty(data, "__ob__", {
             value: dep,
@@ -29,7 +29,7 @@ function walkDefineReactive<T extends Observe>(data: T, key: string) {
 
     const dep = new Dep();
 
-    if (isReactive(data, dep)) return;
+    isReactive(data, dep);
 
     Object.defineProperty(data, key, {
         get() {

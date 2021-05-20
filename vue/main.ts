@@ -10,7 +10,7 @@ function mount(vm: Vue) {
     }, vm).run();
 
     //创建虚拟dom
-    vm.$vnode = cr("div", {}, [vm._oldVnode]);
+    vm.$vnode = vm._oldVnode;// cr("div", {}, []);
 
     //虚拟dom转真实node 并且添加到文档中
     document.body.append(render(vm.$vnode))

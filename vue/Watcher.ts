@@ -29,7 +29,7 @@ export default class Watcher {
     }
 
     updateDiff() {
-        diffVnodePath(this.vm.$vnode, cr("div", {}, this.cb()))
+        diffVnodePath(this.vm.$vnode, this.cb())
     }
 
     update() {
