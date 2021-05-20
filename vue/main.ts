@@ -1,14 +1,13 @@
 import { VueOptions, Vue } from "../types/vueOptions";
-import { CreateVnode as h, render, CreateRootVnode as cr, diffVnodePath } from "../util";
-
-import { defineReactive, Watcher } from "./reactive";
+import { CreateVnode as h, render, CreateRootVnode as cr } from "../util";
+import { defineReactive } from "./reactive";
+import Watcher from "./Watcher";
 
 
 function mount(vm: Vue) {
     new Watcher(() => {
         return vm.$options.render.call(vm, h);
     }, vm).run();
-
 
     //创建虚拟dom
     vm.$vnode = cr("div", {}, [vm._oldVnode]);

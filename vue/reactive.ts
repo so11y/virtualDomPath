@@ -1,101 +1,39 @@
-import { Vue } from "../types/vueOptions";
-import { CreateVnode as h, render, CreateRootVnode as cr, diffVnodePath } from "../util";
+import { isObject } from "../util/type";
+import Dep from "./Dep";
 
+interface Observe {
+    __ob__?: Dep
+}
+
+//添加响应式
 export function defineReactive<T extends {}>(data: T) {
-
-    let keys = Object.keys(data);
-
-    keys.forEach(v => {
-        walkDefineReactive(data, v);
-    })
-
+    Object.keys(data).forEach(v => walkDefineReactive(data, v))
 }
 
-const workQueue: Watcher[] = [];
-
-function updateQuene() {
-    Promise.resolve().then(() => {
-        while (workQueue.length) {
-            workQueue.pop().updateDiff();
-        }
-    })
-}
-
-
-export class Watcher {
-
-    cb: Function;
-    vm: Vue;
-    id: number = 0;
-    static WatcherId: number = 0;
-
-    constructor(cb: Function, vm: Vue) {
-        this.cb = cb;
-        this.vm = vm;
-        this.id = Watcher.WatcherId++;
-        Dep.target = this;
-    }
-
-    updateDiff() {
-        diffVnodePath(this.vm.$vnode, cr("div", {}, this.cb()))
-    }
-
-    update() {
-        if (!workQueue.length || workQueue.every(v => v.id != this.id)) {
-            workQueue.push(this);
-        }
-        updateQuene();
-    }
-
-    run() {
-        this.vm._oldVnode = this.cb();
-    }
-}
-
-class Dep {
-
-    static target: Watcher;
-
-    static DeptId: number = 0;
-
-    id: number;
-
-    subs: Watcher[] = [];
-
-    constructor() {
-        this.id = Dep.DeptId++;
-    }
-
-    append() {
-        if (!this.subs.length) {
-            this.subs.push(Dep.target);
-        } else if (this.subs.some(v => v.id !== Dep.target.id)) {
-            this.subs.push(Dep.target);
-        }
-    }
-
-    notify() {
-        this.subs.forEach(v => {
-            v.update()
+//判断是否为响应式
+function isReactive<T extends Observe>(data: T, dep: Dep) {
+    if (!data.__ob__ && isObject(data)) {
+        Object.defineProperty(data, "__ob__", {
+            value: dep,
+            enumerable: false
         })
     }
-
 }
 
-function walkDefineReactive<T extends {}>(data: T, key: string) {
+function walkDefineReactive<T extends Observe>(data: T, key: string) {
     let ordValue = data[key];
 
-    if (typeof ordValue == "object") {
-        defineReactive(data[key]);
-    }
+    if (isObject(data))
+        defineReactive(data[key])
 
-    let dep = new Dep();
+    const dep = new Dep();
+
+    isReactive(data, dep);
 
     Object.defineProperty(data, key, {
         get() {
-            if (Dep.target) {
+            if (Dep.target)
                 dep.append();
-            }
             return ordValue;
         },
         set(newValue) {
