@@ -1,5 +1,5 @@
 import { CreateRealDom, CreateRealTextDom, HtmlAttribute, HtmlAttributeTagList, addEventListener, updateAddEventListener } from "../types/dom";
-import { isEqual, isNoEqual, isString, Ivnode, pathClass, pathStyle, pathText, isArray } from "../types/vnode";
+import { isEqual, isNoEqual, isString, Ivnode, pathClass, pathStyle, pathText, isArray, isNumber } from "../types/vnode";
 type children = Pick<Ivnode, "children">["children"];
 type domTag = Pick<Ivnode, "tag">["tag"];
 type vnodeOptions = Omit<Ivnode, "tag" | "children">
@@ -10,7 +10,11 @@ export class vnode {
     public _isRoot: boolean = false;
     public _parent: vnode;
     constructor(tag: domTag, vnodeOptions: vnodeOptions = {}, children: children) {
-        if (!Array.isArray(children) && typeof children != "string") children = [children];
+        if (!Array.isArray(children) && !isString(children) && !isNumber(children)) {
+            children = [children];
+        } else if (isNumber(children)) {
+            children = String(children);
+        }
 
         this.vnode = {
             tag,
@@ -77,7 +81,7 @@ function walkPath(ordVnode: vnode, newVnode: vnode) {
 
     let ordVnodeInstance = ordVnode.vnode;
     let newVnodeInstance = newVnode.vnode;
-    
+
     if (isArray(ordVnodeInstance.children) && isArray(newVnodeInstance.children)) {
         //如果子节点都替换了,就直接结束
         if (elementEqualTagPath(ordVnode, newVnode)) return
@@ -157,4 +161,4 @@ function elementEqualTagPath(ordVnode: vnode, newVnode: vnode): boolean {
         return true;
     }
     return false;
-}   
+}

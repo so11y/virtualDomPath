@@ -15,8 +15,8 @@ new Vue({
                         console.log(22);
                     }
                 }
-            }, String(this._data.a)),
-            h("div", {}, String(_this._data.b == 1010 ? 1 : 2))
+            }, this._data.a),
+            h("div", {}, _this._data.b == 1010 ? 1 : 2)
         ])
     },
     data() {
