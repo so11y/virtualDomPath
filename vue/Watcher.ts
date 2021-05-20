@@ -12,8 +12,6 @@ function updateQuene() {
         }
     })
 }
-
-
 export default class Watcher {
 
     cb: Function;

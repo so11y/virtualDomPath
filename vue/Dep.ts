@@ -15,11 +15,9 @@ export default class Dep {
     }
 
     append() {
-        if (!this.subs.length) {
+        if (!this.subs.length || this.subs.every(v => v.id !== Dep.target.id))
             this.subs.push(Dep.target);
-        } else if (this.subs.some(v => v.id !== Dep.target.id)) {
-            this.subs.push(Dep.target);
-        }
+
     }
 
     notify() {
