@@ -1,16 +1,14 @@
 import { VueOptions, Vue } from "../types/vueOptions";
 import { CreateVnode as h, render, CreateRootVnode as cr } from "../util";
 import { defineReactive } from "./reactive";
-import Watcher from "./Watcher";
+import Watcher, { defineComputed } from "./Watcher";
 
 
 function mount(vm: Vue) {
-    new Watcher(() => {
-        return vm.$options.render.call(vm, h);
-    }, vm).run();
+    new Watcher(() => vm.$options.render.call(vm, h), vm).run();
 
     //创建虚拟dom
-    vm.$vnode = vm._oldVnode;// cr("div", {}, []);
+    vm.$vnode = vm._oldVnode;
 
     //虚拟dom转真实node 并且添加到文档中
     document.body.append(render(vm.$vnode))
@@ -22,9 +20,13 @@ function initData(vm: Vue) {
 }
 
 
+
 function initOptions(vm: Vue) {
     if (vm.$options.data) {
         initData(vm);
+    }
+    if (vm.$options.computed) {
+        defineComputed(vm);
     }
 }
 

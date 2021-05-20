@@ -6,13 +6,18 @@ import Dep from "./Dep";
 const workQueue: Watcher[] = [];
 
 function updateQuene() {
-    Promise.resolve().then(() => {
+   Promise.resolve().then(() => {
         while (workQueue.length) {
             console.time("updatePathVnodeEnd-time");
-            workQueue.pop().updateDiff();
+            const watch = workQueue.shift();
+            if (watch.renderWatcher) {
+                watch.updateDiff()
+            } else {
+                watch.updateOther();
+            }
             console.timeEnd("updatePathVnodeEnd-time");
         }
-    })
+   })
 }
 export default class Watcher {
 
@@ -20,13 +25,15 @@ export default class Watcher {
     vm: Vue;
     id: number = 0;
     static WatcherId: number = 0;
+    renderWatcher: boolean;
 
-    constructor(cb: Function, vm: Vue) {
+    constructor(cb: Function, vm: Vue, isRenderWatcher = true) {
         this.cb = cb;
         this.vm = vm;
         this.id = Watcher.WatcherId++;
-        Dep.target = this;
+        this.renderWatcher = isRenderWatcher;
     }
+    updateOther() { }
 
     updateDiff() {
         diffVnodePath(this.vm.$vnode, this.cb())
@@ -35,11 +42,62 @@ export default class Watcher {
     update() {
         if (!workQueue.length || workQueue.every(v => v.id != this.id)) {
             workQueue.push(this);
+            workQueue.sort((p, v) => p.id - v.id);
         }
         updateQuene();
     }
 
     run() {
+        this.renderWatcher && (this.vm._watcher = this);
+        Dep.target = this;
         this.vm._oldVnode = this.cb();
+        Dep.target = null;
+        if (!this.vm._watchers)
+            this.vm._watchers = [this]
+        else
+            this.vm._watchers.push(this);
     }
+}
+
+class ComputedWatcher extends Watcher {
+    value: any;
+    lazy = true; //懒的
+    dirty = true;//是否被变成过 true 初始为true
+
+    constructor(cb: Function, vm: Vue) {
+        super(cb, vm);
+        this.renderWatcher = false;
+    }
+    updateOther() {
+        this.dirty = true;
+    }
+
+    run() {
+        Dep.target = this;
+        this.value = this.cb();
+        this.dirty = false;
+        Dep.target = null;
+    }
+}
+export function defineComputed(vm: Vue) {
+    Object.keys(vm.$options.computed).forEach(v => {
+        if (!(v in vm)) {
+            const watch = new ComputedWatcher(vm.$options.computed[v].bind(vm), vm);
+            if (!vm._watchers)
+                vm._watchers = [watch]
+            else
+                vm._watchers.push(watch);
+            Object.defineProperty(vm, v, {
+                get() {
+                    if (watch.dirty) {
+                        watch.run();
+                        Dep.target = watch.vm._watcher;
+                    }
+                    return watch.value
+                }
+            })
+        } else {
+            console.warn(`计算属性key与vm实例重复${v}`)
+        }
+    })
 }
