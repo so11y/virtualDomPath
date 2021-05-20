@@ -44,7 +44,6 @@ function walkDefineReactive<T extends Observe>(data: T, key: string) {
 
     const dep = new Dep();
 
-
     isReactive(data, dep);
 
     Object.defineProperty(data, key, {

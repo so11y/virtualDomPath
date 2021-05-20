@@ -18,7 +18,7 @@ export interface Vue {
     _oldVnode: vnode;
     _watcher: Watcher;
     _watchers: Watcher[];
-    [k: string]: any
+    [k: string]: any;
 }
 
 interface renderFun {
@@ -29,11 +29,26 @@ interface computedFun {
     [K: string]: () => void;
 }
 
+interface watchFun {
+    (ordValue: any, newValue: any): void;
+}
+interface watchOption {
+    handle: watchFun;
+    deep?: boolean;
+    immediate?: boolean;
+    sync?: boolean;
+}
+
+interface watchOptions {
+    [key: string]: watchFun | watchOption;
+}
+
 export interface VueOptions {
     readonly el?: String | HTMLElement;
     render?: renderFun;
     data?: VueDataFun;
     computed?: computedFun;
+    watch?: watchOptions;
     beforeCreate?: hookFun;
     created?: hookFun;
     mounted?: hookFun;

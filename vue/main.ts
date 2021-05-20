@@ -1,7 +1,7 @@
 import { VueOptions, Vue } from "../types/vueOptions";
 import { CreateVnode as h, render, CreateRootVnode as cr } from "../util";
 import { defineReactive } from "./reactive";
-import Watcher, { defineComputed } from "./Watcher";
+import Watcher, { defineComputed, defineWatchOption } from "./Watcher";
 
 
 function mount(vm: Vue) {
@@ -18,7 +18,7 @@ function initData(vm: Vue) {
     vm.$data = vm._data = vm.$options.data.call(vm);
     Object.keys(vm.$data).forEach(v => {
         Object.defineProperty(vm, v, {
-            enumerable:true,
+            enumerable: true,
             get() {
                 return vm.$data[v]
             },
@@ -38,6 +38,9 @@ function initOptions(vm: Vue) {
     }
     if (vm.$options.computed) {
         defineComputed(vm);
+    }
+    if (vm.$options.watch) {
+        defineWatchOption(vm);
     }
 }
 

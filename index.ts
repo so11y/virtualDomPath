@@ -4,14 +4,25 @@ import Vue from "./vue/main";
 new Vue({
     render(h) {
         return h("div", {}, [
-            h("div", {}, this.c.cc),
-            ...this.g.map(v => h("div", {}, v)),
-            h("div", {}, this.good.toString()),
+            h("div", {}, this.a),
+            // ...this.g.map(v => h("div", {}, v)),
+            // h("div", {}, this.good.toString()),
         ])
     },
     computed: {
         good() {
             return this.g;
+        }
+    },
+    watch: {
+        a(newValue, ordValue) {
+            console.log(newValue, ordValue);
+        },
+        b: {
+            immediate: true,
+            handle() {
+                console.log("gogo",this.b);
+            }
         }
     },
     data() {
@@ -27,7 +38,7 @@ new Vue({
     mounted() {
         console.log(this);
         setTimeout(() => {
-            this.g.push(77);
+            this.a = 666;
             // this._watcher.update();
         }, 2000)
     }
