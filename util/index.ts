@@ -51,9 +51,14 @@ export function render(vnodeInstance: vnode) {
 
     if (vnode.children && Array.isArray(vnode.children)) {
         for (let i = 0, length = vnode.children.length; i < length; i++) {
-            vnode.children[i]._parent = vnodeInstance;
-            let childDom = render(vnode.children[i]);
-            vnode.realDom.appendChild(childDom);
+            //过滤掉null
+            if (!vnode.children[i]) {
+                vnode.children.splice(i, 1);
+            } else {
+                vnode.children[i]._parent = vnodeInstance;
+                let childDom = render(vnode.children[i]);
+                vnode.realDom.appendChild(childDom);
+            }
         }
     } else {
         if (isString(vnode.children))

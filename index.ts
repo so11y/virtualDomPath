@@ -10,13 +10,11 @@ new Vue({
                 on: {
                     click() {
                         _this._data.b = 1010;
-                        console.log(22);
                         _this._data.a = 1010;
-                        console.log(22);
                     }
                 }
             }, this._data.a),
-            h("div", {}, _this._data.b == 1010 ? 1 : 2)
+            this._data.b == 1010 ? h("div", {}, 1) : null
         ])
     },
     data() {

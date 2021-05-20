@@ -8,7 +8,9 @@ const workQueue: Watcher[] = [];
 function updateQuene() {
     Promise.resolve().then(() => {
         while (workQueue.length) {
+            console.time("updatePathVnodeEnd-time");
             workQueue.pop().updateDiff();
+            console.timeEnd("updatePathVnodeEnd-time");
         }
     })
 }
