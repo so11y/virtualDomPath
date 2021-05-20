@@ -3,34 +3,22 @@ import Vue from "./vue/main";
 
 new Vue({
     render(h) {
-        let _this = this;
         return h("div", {}, [
-            h("div", {
-                style: "color:red",
-                on: {
-                    click() {
-                        _this._data.b = 1010;
-                        _this._data.b = 10101;
-                        _this._data.b = 10102;
-                        _this._data.b = 10103;
-                        _this._data.a = 1010;
-                    }
-                }
-            }, this._data.a),
-            _this._data.b == 1010 ? h("span", {
-                style:"color:blue"
-            }, '11') : h("span", {}, '11'),
+            h("div", {}, this.c.cc),
+            ...this.g.map(v => h("div", {}, v)),
+            h("div", {}, this.good.toString()),
         ])
     },
     computed: {
         good() {
-            return this._data.b + 101 + "我是计算属性--~";
+            return this.g;
         }
     },
     data() {
         return {
             a: 33,
             b: 666,
+            g: [1, 2, 3, 4],
             c: {
                 cc: 1
             }
@@ -38,5 +26,9 @@ new Vue({
     },
     mounted() {
         console.log(this);
+        setTimeout(() => {
+            this.g.push(77);
+            // this._watcher.update();
+        }, 2000)
     }
 })

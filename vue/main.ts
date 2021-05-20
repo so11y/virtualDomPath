@@ -15,7 +15,18 @@ function mount(vm: Vue) {
 }
 
 function initData(vm: Vue) {
-    vm._data = vm.$options.data.call(vm);
+    vm.$data = vm._data = vm.$options.data.call(vm);
+    Object.keys(vm.$data).forEach(v => {
+        Object.defineProperty(vm, v, {
+            enumerable:true,
+            get() {
+                return vm.$data[v]
+            },
+            set(value) {
+                vm.$data[v] = value;
+            }
+        })
+    })
     defineReactive(vm._data);
 }
 

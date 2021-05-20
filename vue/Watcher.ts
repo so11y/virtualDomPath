@@ -6,7 +6,7 @@ import Dep from "./Dep";
 const workQueue: Watcher[] = [];
 
 function updateQuene() {
-   Promise.resolve().then(() => {
+    Promise.resolve().then(() => {
         while (workQueue.length) {
             console.time("updatePathVnodeEnd-time");
             const watch = workQueue.shift();
@@ -17,13 +17,14 @@ function updateQuene() {
             }
             console.timeEnd("updatePathVnodeEnd-time");
         }
-   })
+    })
 }
 export default class Watcher {
 
     cb: Function;
     vm: Vue;
     id: number = 0;
+    deps: Dep[] = [];
     static WatcherId: number = 0;
     renderWatcher: boolean;
 
@@ -61,7 +62,6 @@ export default class Watcher {
 
 class ComputedWatcher extends Watcher {
     value: any;
-    lazy = true; //懒的
     dirty = true;//是否被变成过 true 初始为true
 
     constructor(cb: Function, vm: Vue) {
@@ -83,15 +83,18 @@ export function defineComputed(vm: Vue) {
     Object.keys(vm.$options.computed).forEach(v => {
         if (!(v in vm)) {
             const watch = new ComputedWatcher(vm.$options.computed[v].bind(vm), vm);
-            if (!vm._watchers)
-                vm._watchers = [watch]
-            else
-                vm._watchers.push(watch);
+
+            if (!vm._watchers) vm._watchers = [watch]
+
+            else vm._watchers.push(watch);
+
             Object.defineProperty(vm, v, {
+                enumerable:true,
                 get() {
                     if (watch.dirty) {
                         watch.run();
                         Dep.target = watch.vm._watcher;
+                        watch.deps.forEach(w => w.append());
                     }
                     return watch.value
                 }

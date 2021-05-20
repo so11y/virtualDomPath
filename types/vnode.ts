@@ -10,7 +10,7 @@ export interface Ivnode {
     style?: string;
     class?: string | Array<string>;
     on?: Partial<Ievent>;
-    children?: Array<vnode> | string | number;
+    children?: Array<vnode> | string | number | object;
 }
 
 export function pathClass(ordVnode: vnode, newVnode: vnode) {
