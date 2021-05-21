@@ -1,8 +1,8 @@
 import { Ievent, Ivnode } from "./vnode";
 
-export const HtmlAttributeTagList = ["style", "class", "on"];
+export const HtmlAttributeTagList = ["style", "class", "on", "domProps"];
 
-export interface HtmlAttribute extends Partial<Pick<Ivnode, "style" | "class" | "on">> { }
+export interface HtmlAttribute extends Partial<Pick<Ivnode, "style" | "class" | "on" | "domProps">> { }
 
 export function CreateRealDom(tag: string, readHtmlAttribute: HtmlAttribute): HTMLElement {
     const dom = document.createElement(tag);
@@ -20,6 +20,12 @@ export function CreateRealDom(tag: string, readHtmlAttribute: HtmlAttribute): HT
             case "on":
                 addEventListener(readHtmlAttribute.on, dom);
                 break;
+            case "domProps":
+                if (readHtmlAttribute[attribute]) {
+                    Object.keys(readHtmlAttribute[attribute]).forEach(v => {
+                        dom.setAttribute(v, String(readHtmlAttribute[attribute][v]));
+                    })
+                }
         }
 
     })

@@ -4,8 +4,19 @@ import Vue from "./vue/main";
 new Vue({
     render(h) {
         return h("div", {}, [
+            h("h1",{},"简简单单实现一个双向"),
             h("div", {}, this.a),
-            // ...this.g.map(v => h("div", {}, v)),
+            h("input", {
+                domProps: {
+                    value: this.a
+                },
+                on: {
+                    input: (e: InputEvent) => {
+                        this.a = (e.target as HTMLInputElement).value
+                    }
+                }
+            }),
+            ...this.g.map(v => h("div", {}, v)),
             // h("div", {}, this.good.toString()),
         ])
     },
@@ -21,7 +32,7 @@ new Vue({
         b: {
             immediate: true,
             handle() {
-                console.log("gogo",this.b);
+                console.log("gogo", this.b);
             }
         }
     },

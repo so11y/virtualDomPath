@@ -1,5 +1,5 @@
 import { CreateRealDom, CreateRealTextDom, HtmlAttribute, HtmlAttributeTagList, addEventListener, updateAddEventListener } from "../types/dom";
-import { isEqual, isNoEqual, isString, Ivnode, pathClass, pathStyle, pathText, isArray, isNumber } from "../types/vnode";
+import { isEqual, isNoEqual, isString, Ivnode, pathClass, pathStyle, pathText, isArray, isNumber, pathDomProps, isEqualParse } from "../types/vnode";
 type children = Pick<Ivnode, "children">["children"];
 type domTag = Pick<Ivnode, "tag">["tag"];
 type vnodeOptions = Omit<Ivnode, "tag" | "children">
@@ -148,6 +148,8 @@ function elementEqualTagPath(ordVnode: vnode, newVnode: vnode): boolean {
         if (isEqual(ordVnodeInstance, newVnodeInstance, "class")) pathClass(ordVnode, newVnode);
         //style打补丁
         if (isEqual(ordVnodeInstance, newVnodeInstance, "style")) pathStyle(ordVnode, newVnode);
+        //domProps补丁 简单点直接转stringfy
+        if (isEqualParse(ordVnodeInstance, newVnodeInstance, "domProps")) pathDomProps(ordVnode, newVnode);
 
         //event必定要判断一次
         updateAddEventListener(ordVnode.vnode, newVnode.vnode, ordVnode.vnode.realDom);
