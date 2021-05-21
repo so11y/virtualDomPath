@@ -3,7 +3,7 @@ import { vnode } from "../util";
 export interface Ievent {
     click: (...arg: any[]) => any;
     input: (...arg: any[]) => any;
-    keydown:(...arg: any[]) => any;
+    keydown: (...arg: any[]) => any;
 }
 export interface Ivnode {
     tag: string;
@@ -41,12 +41,18 @@ export function pathDomProps(ordVnode: vnode, newVnode: vnode) {
     let newVnodeInstance = newVnode.vnode;
 
     Object.keys(newVnodeInstance.domProps).forEach(v => {
-        if (!ordVnodeInstance.domProps[v] && newVnodeInstance.domProps[v]) {
-            ordVnodeInstance.realDom.setAttribute(v, String(newVnodeInstance.domProps[v]))
-        } else if (ordVnodeInstance.domProps[v] && !newVnodeInstance.domProps[v]) {
-            ordVnodeInstance.realDom.removeAttribute(v)
+        if (v == "value") {
+            if (ordVnodeInstance.realDom.tagName == "INPUT") {
+                (ordVnodeInstance.realDom as HTMLInputElement).value = String(newVnodeInstance.domProps[v]);
+            }
         } else {
-            ordVnodeInstance.realDom.setAttribute(v, String(newVnodeInstance.domProps[v]))
+            if (!ordVnodeInstance.domProps[v] && newVnodeInstance.domProps[v]) {
+                ordVnodeInstance.realDom.setAttribute(v, String(newVnodeInstance.domProps[v]))
+            } else if (ordVnodeInstance.domProps[v] && !newVnodeInstance.domProps[v]) {
+                ordVnodeInstance.realDom.removeAttribute(v)
+            } else {
+                ordVnodeInstance.realDom.setAttribute(v, String(newVnodeInstance.domProps[v]))
+            }
         }
     })
     ordVnodeInstance.domProps = newVnodeInstance.domProps;

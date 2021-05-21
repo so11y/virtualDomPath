@@ -6,37 +6,59 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <style>
-        *{
+        * {
             padding: 0;
             margin: 10px 10px 0;
         }
-        .content {
-            width: 400px;
-            height: 200px;
-            background: pink;
-            display: flex;
-            justify-content: space-between;
-            flex-wrap: wrap;
-        }
-        .left {
+
+        .text {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
             width: 100px;
-            height: 100px;
-            background: blue;
-            transition: color 1s;
+            display: inline-block;
         }
-        .right {
-            width: 20px;
-            background: pink;
-        }
-        .kkz{
+
+        .undo {
+            text-decoration: line-through;
             color: red;
+        }
+
+        .todo {
+            color: blue;
         }
     </style>
 </head>
 
 <body>
     <div id="app"></div>
-    <script type="module" src="./index.ts" ></script>
-    
+    <script>
+        const work = [
+            {
+                type: true,
+                value: "响应式data"
+            },
+            {
+                type: true,
+                value: "虚拟dom双向"
+            },
+            {
+                type: true,
+                value: "计算属性"
+            },
+            {
+                type: true,
+                value: "监听属性"
+            },
+            {
+                type: true,
+                value: "监听属性监听计算属性"
+            }
+        ]
+        localStorage.setItem("work", JSON.stringify(work));
+    </script>
+    <script type="module" src="./index.ts"></script>
+
 </body>
+
 </html>

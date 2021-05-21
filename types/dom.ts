@@ -23,7 +23,11 @@ export function CreateRealDom(tag: string, readHtmlAttribute: HtmlAttribute): HT
             case "domProps":
                 if (readHtmlAttribute[attribute]) {
                     Object.keys(readHtmlAttribute[attribute]).forEach(v => {
-                        dom.setAttribute(v, String(readHtmlAttribute[attribute][v]));
+                        if(v == "value" && tag == "input"){
+                            (dom as HTMLInputElement).value = String(readHtmlAttribute[attribute][v]);
+                        }else{
+                            dom.setAttribute(v, String(readHtmlAttribute[attribute][v]));
+                        }
                     })
                 }
         }

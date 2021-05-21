@@ -5,14 +5,24 @@ interface Observe {
     __ob__?: Dep
 }
 
-const overRewrite = ["push"];
+const overRewrite = ["push", "splice"];
 
 const ordArrayFun = overRewrite.map(key => Array.prototype[key])
 
 overRewrite.forEach((key, index) => {
-    Array.prototype[key] = function (arg: any) {
-        ordArrayFun[index].call(this, arg);
+    Array.prototype[key] = function (...arg: any) {
+        ordArrayFun[index].apply(this, arg);
         if (this.__ob__) {
+            if (index == 0) {
+                if (Array.isArray(arg))
+                    defineReactive(arg[0]);
+                Dep.target = this.__ob__.subs.find(v => v.renderWatcher);
+                if (Array.isArray(arg))
+                    arg[0].__ob__.append();
+                else
+                    arg.__ob__.append();
+                Dep.target = null;
+            }
             this.__ob__.notify();
         }
     }
@@ -40,9 +50,13 @@ function walkDefineReactive<T extends Observe>(data: T, key: string) {
     let ordValue = data[key];
 
     if (Array.isArray(ordValue)) {
-         walkDefineReactive(ordValue as Observe,"toString");
-    } else if (isObject(data)) {
-        defineReactive(data[key])
+        if (!ordValue.length) {
+            walkDefineReactive(ordValue as Observe, "toString");
+        } else {
+            defineReactive(ordValue)
+        }
+    } else if (isObject(ordValue)) {
+        defineReactive(ordValue)
     }
 
     const dep = new Dep();
@@ -53,7 +67,7 @@ function walkDefineReactive<T extends Observe>(data: T, key: string) {
         get() {
             if (Dep.target) {
                 dep.append();
-                if (Array.isArray(ordValue)) {
+                if (Array.isArray(ordValue) && (ordValue as Observe).__ob__) {
                     (ordValue as Observe).__ob__.append();
                 }
             }
@@ -62,6 +76,9 @@ function walkDefineReactive<T extends Observe>(data: T, key: string) {
         set(newValue) {
             if (newValue != ordValue) {
                 ordValue = newValue;
+                if (isObject(ordValue)) {
+                    defineReactive(ordValue)
+                }
                 dep.notify();
             }
         }

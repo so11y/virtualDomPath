@@ -13,14 +13,38 @@ new Vue({
                     input: (e: InputEvent) => {
                         this.workInput = (e.target as HTMLInputElement).value;
                     },
-                    keydown: (e:KeyboardEvent) => {
-                        if(e.keyCode == 13){
+                    keydown: (e: KeyboardEvent) => {
+                        if (e.keyCode == 13) {
                             this.add();
+                            this.workInput = "";
                         }
                     }
                 }
             }),
-            ...this.workList.map(v=> h("h6", {}, v))
+            ...this.workList.map((v, i) => h("h6", {}, [
+                h("span", {
+                    domProps: {
+                        title: v.value
+                    },
+                    class: v.type ? ['undo', 'text'] : ['todo', 'text']
+                }, v.value),
+                h("button", {
+                    on: {
+                        click: () => {
+                            this.workList.splice(i, 1);
+                        }
+                    }
+                }, "删除"),
+                h("button", {
+                    on: {
+                        click: () => {
+                            this.workList[i].type = !v.type;
+
+                            console.log(this);
+                        }
+                    }
+                }, v.type ? '已完成': '未完成'),
+            ]))
         ])
     },
     data() {
@@ -29,9 +53,17 @@ new Vue({
             workList: [],
         }
     },
+    created() {
+        this.workList = JSON.parse(localStorage.getItem("work"))
+    },
     methods: {
-        add(){
-            this.workList.push(this.workInput);
+        add() {
+            if (this.workInput) {
+                this.workList.push({
+                    type: false,
+                    value: this.workInput
+                });
+            }
         }
     }
 })
