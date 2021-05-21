@@ -6,11 +6,14 @@ export interface Ievent {
 export interface Ivnode {
     tag: string;
     id?: string;
+    domProps?: {
+        [key: string]: string | number | boolean;
+    };
     realDom?: HTMLElement;
     style?: string;
     class?: string | Array<string>;
     on?: Partial<Ievent>;
-    children?: Array<vnode> | string | number ;
+    children?: Array<vnode> | string | number;
 }
 
 export function pathClass(ordVnode: vnode, newVnode: vnode) {
