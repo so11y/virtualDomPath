@@ -1,8 +1,9 @@
 import { vnode } from "../util";
 
 export interface Ievent {
-    click: (...arg: any[]) => any
-    input: (...arg: any[]) => any
+    click: (...arg: any[]) => any;
+    input: (...arg: any[]) => any;
+    keydown:(...arg: any[]) => any;
 }
 export interface Ivnode {
     tag: string;

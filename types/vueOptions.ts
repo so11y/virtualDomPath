@@ -47,6 +47,9 @@ export interface VueOptions {
     readonly el?: String | HTMLElement;
     render?: renderFun;
     data?: VueDataFun;
+    methods: {
+        [key: string]: (...arg: any[]) => any
+    };
     computed?: computedFun;
     watch?: watchOptions;
     beforeCreate?: hookFun;
