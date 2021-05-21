@@ -7,15 +7,18 @@ const workQueue: Watcher[] = [];
 
 function updateQuene() {
     Promise.resolve().then(() => {
-        while (workQueue.length) {
-            //  console.time("updatePathVnodeEnd-time");
-            const watch = workQueue.shift();
-            if (watch.renderWatcher) {
-                watch.updateDiff()
-            } else {
-                watch.updateOther();
+        if (workQueue.length) {
+            console.log("当前需要执行的异步更新队列长度", workQueue.length);
+            console.time("执行当前所有队列watch时间");
+            while (workQueue.length) {
+                const watch = workQueue.shift();
+                if (watch.renderWatcher) {
+                    watch.updateDiff()
+                } else {
+                    watch.updateOther();
+                }
             }
-            // console.timeEnd("updatePathVnodeEnd-time");
+            console.timeEnd("执行当前所有队列watch时间");
         }
     })
 }
