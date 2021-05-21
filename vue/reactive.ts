@@ -39,8 +39,11 @@ function isReactive<T extends Observe>(data: T, dep: Dep) {
 function walkDefineReactive<T extends Observe>(data: T, key: string) {
     let ordValue = data[key];
 
-    if (isObject(data))
+    if (Array.isArray(ordValue)) {
+         walkDefineReactive(ordValue as Observe,"toString");
+    } else if (isObject(data)) {
         defineReactive(data[key])
+    }
 
     const dep = new Dep();
 
@@ -48,8 +51,12 @@ function walkDefineReactive<T extends Observe>(data: T, key: string) {
 
     Object.defineProperty(data, key, {
         get() {
-            if (Dep.target)
+            if (Dep.target) {
                 dep.append();
+                if (Array.isArray(ordValue)) {
+                    (ordValue as Observe).__ob__.append();
+                }
+            }
             return ordValue;
         },
         set(newValue) {
