@@ -39,8 +39,6 @@ new Vue({
                     on: {
                         click: () => {
                             this.workList[i].type = !v.type;
-
-                            console.log(this);
                         }
                     }
                 }, v.type ? '已完成': '未完成'),
