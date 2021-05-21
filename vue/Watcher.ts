@@ -114,6 +114,9 @@ export function defineComputed(vm: Vue) {
                         }
                     }
                     return watch.value
+                },
+                set(){
+                    console.warn("计算属性暂不支持set");
                 }
             })
         } else {
@@ -152,11 +155,9 @@ export function defineWatchOption(vm: Vue) {
                 Dep.target = watch.vm._watcher;
             }
         }
-        console.log(watch);
 
         if (!vm._watchers) vm._watchers = [watch]
         else vm._watchers.push(watch);
-
 
     })
 }
