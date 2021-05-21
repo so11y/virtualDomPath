@@ -1,6 +1,6 @@
 import { Vue } from "../types/vueOptions";
 import { CreateRootVnode as cr, diffVnodePath } from "../util";
-import Dep from "./Dep";
+import Dep, { ComputedDep } from "./Dep";
 
 
 const workQueue: Watcher[] = [];
@@ -8,14 +8,14 @@ const workQueue: Watcher[] = [];
 function updateQuene() {
     Promise.resolve().then(() => {
         while (workQueue.length) {
-            console.time("updatePathVnodeEnd-time");
+            //  console.time("updatePathVnodeEnd-time");
             const watch = workQueue.shift();
             if (watch.renderWatcher) {
                 watch.updateDiff()
             } else {
                 watch.updateOther();
             }
-            console.timeEnd("updatePathVnodeEnd-time");
+            // console.timeEnd("updatePathVnodeEnd-time");
         }
     })
 }
@@ -63,13 +63,18 @@ export default class Watcher {
 class ComputedWatcher extends Watcher {
     value: any;
     dirty = true;//是否被变成过 true 初始为true
-
-    constructor(cb: Function, vm: Vue) {
+    depRef: ComputedDep;
+    frist = true;
+    constructor(cb: Function, vm: Vue, depRef?: ComputedDep) {
         super(cb, vm);
         this.renderWatcher = false;
+        this.depRef = depRef;
     }
     updateOther() {
         this.dirty = true;
+        if (this.depRef) {
+            this.depRef.notify();
+        }
     }
 
     run() {
@@ -82,7 +87,10 @@ class ComputedWatcher extends Watcher {
 export function defineComputed(vm: Vue) {
     Object.keys(vm.$options.computed).forEach(v => {
         if (!(v in vm)) {
-            const watch = new ComputedWatcher(vm.$options.computed[v].bind(vm), vm);
+
+            const depRef = new ComputedDep();
+
+            const watch = new ComputedWatcher(vm.$options.computed[v].bind(vm), vm, depRef);
 
             if (!vm._watchers) vm._watchers = [watch]
 
@@ -91,10 +99,16 @@ export function defineComputed(vm: Vue) {
             Object.defineProperty(vm, v, {
                 enumerable: true,
                 get() {
+                    if (watch.frist) {
+                        depRef.append();
+                        watch.frist = false;
+                    }
                     if (watch.dirty) {
                         watch.run();
-                        Dep.target = watch.vm._watcher;
-                        watch.deps.forEach(w => w.append());
+                        if (watch.vm._watcher) {
+                            Dep.target = watch.vm._watcher;
+                            watch.deps.forEach(w => w.append());
+                        }
                     }
                     return watch.value
                 }
@@ -135,6 +149,7 @@ export function defineWatchOption(vm: Vue) {
                 Dep.target = watch.vm._watcher;
             }
         }
+        console.log(watch);
 
         if (!vm._watchers) vm._watchers = [watch]
         else vm._watchers.push(watch);

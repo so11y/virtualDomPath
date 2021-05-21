@@ -4,7 +4,7 @@ import Vue from "./vue/main";
 new Vue({
     render(h) {
         return h("div", {}, [
-            h("h1",{},"简简单单实现一个双向"),
+            h("h1", {}, "简简单单实现一个双向"),
             h("div", {}, this.a),
             h("input", {
                 domProps: {
@@ -16,17 +16,17 @@ new Vue({
                     }
                 }
             }),
-            ...this.g.map(v => h("div", {}, v)),
-            // h("div", {}, this.good.toString()),
+            h("h1", {}, "简简单单一个计算属性 并且 监听属性监听计算属性"),
+            h("div", {}, this.good),
         ])
     },
     computed: {
         good() {
-            return this.g;
+            return this.a + "1谢谢你哦";
         }
     },
     watch: {
-        a(newValue, ordValue) {
+        good(newValue, ordValue) {
             console.log(newValue, ordValue);
         },
         b: {
