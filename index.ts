@@ -4,7 +4,7 @@ import Vue from "./vue/main";
 new Vue({
     render(h) {
         return h("div", {}, [
-            h("h1", {}, "Todo List"),
+            h("h1", {}, "手写Vue已经完成的功能 TodoList"),
             h("input", {
                 domProps: {
                     value: this.workInput
