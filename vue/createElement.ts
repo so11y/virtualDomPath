@@ -10,7 +10,18 @@ class VueEvnet {
 
     $on(eventName: string, cb: Function) {
         if (this.eventMap.has(eventName)) {
-            this.eventMap.get(eventName).push(cb);
+            this.eventMap.get(eventName).push(function () {
+                try {
+                    const error = cb();
+                    if (error instanceof Promise) {
+                        error.catch(() => {
+                            console.warn("报错了。？？？？");
+                        })
+                    }
+                } catch (error) {
+                    console.warn(error, `错误来自$on,key==>${eventName}`)
+                }
+            });
         } else {
             this.eventMap.set(eventName, [cb]);
         }
@@ -74,7 +85,7 @@ export function createElement(this: Vue, tag: string, vnodeOptions: vnodeOptions
                 this.$childre.push(component);
             }
             if (vnodeOptions.vueEvent) {
-                initEvent(this, vnodeOptions.vueEvent);
+                initEvent(component, vnodeOptions.vueEvent);
             }
             this.$options.components[tag].mounted && this.$options.components[tag].mounted.call(component)
             Dep.target = component.$parent._watcher;

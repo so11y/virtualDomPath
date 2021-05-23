@@ -10,14 +10,17 @@ new Vue({
             props: ["workInput"],
             render(h) {
                 return h("div", {}, [
-                    h("div", {}, "我是子组件"+(this.workInput)),
+                    h("div", {}, "我是子组件" + (this.workInput)),
                 ])
             },
             mounted() {
                 console.log("子组件挂载", this);
+                this.$on("click", () => {
+                    console.log("fuck you");
+                })
                 setTimeout(() => {
-                    this.$parent.$emit("click", 6666);
-                },2000)
+                    this.$emit("click", 6666);
+                }, 2000)
             }
         }
     },
