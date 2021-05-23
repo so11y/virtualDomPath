@@ -21,7 +21,9 @@ new Vue({
             render(h) {
                 return h("div", {}, [
                       h("div", {}, "我是子组件" + (this.workInput)),
-                    h("childChild", {}, null)
+                    h("childChild", {
+                        componentsId:"childChild0",
+                    }, null)
                 ])
             },
             mounted() {
@@ -33,6 +35,7 @@ new Vue({
         return h("div", {}, [
             h("h1", {}, "手写Vue已经完成的功能 TodoList"),
             h("child", {
+                componentsId:"child0",
                 props: ["workInput"]
             }, null),
             h("h1", {}, this.workInput),
