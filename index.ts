@@ -8,29 +8,16 @@ new Vue({
              * 好麻烦 这里图省事直接声明需要使用父级的什么属性
              */
             props: ["workInput"],
-            components: {
-                "childChild": {
-                    render(h) {
-                        return h("div", {}, "我是孙组件")
-                    },
-                    mounted() {
-                        console.log("孙组件挂载");
-                    }
-                }
-            },
             render(h) {
                 return h("div", {}, [
-                      h("div", {}, "我是子组件" + (this.workInput)),
-                    h("childChild", {
-                        componentsId:"childChild0",
-                    }, null),
-                    h("childChild", {
-                        componentsId:"childChild1",
-                    }, null)
+                    h("div", {}, "我是子组件"+(this.workInput)),
                 ])
             },
             mounted() {
                 console.log("子组件挂载", this);
+                setTimeout(() => {
+                    this.$parent.$emit("click", 6666);
+                },2000)
             }
         }
     },
@@ -38,26 +25,18 @@ new Vue({
         return h("div", {}, [
             h("h1", {}, "手写Vue已经完成的功能 TodoList"),
             h("child", {
-                componentsId:"child0",
+                vueEvent: {
+                    click: (v) => {
+                        this.workInput = v;
+                    }
+                },
+                componentsId: "child0",
                 props: ["workInput"]
             }, null),
-            h("h2", {},"2个watch需要更新"+ this.workInput),
-            h("h1", {},"1个watch需要更新"+ this.workInput1),
-            h("input", {
-                domProps: {
-                    value: this.workInput1,
-                    placeholder:"更新父级"
-                },
-                on: {
-                    input: (e: InputEvent) => {
-                        this.workInput1 = (e.target as HTMLInputElement).value;
-                    },
-                }
-            }),
             h("input", {
                 domProps: {
                     value: this.workInput,
-                    placeholder:"更新父子级"
+                    placeholder: "更新父子级"
                 },
                 on: {
                     input: (e: InputEvent) => {
@@ -101,7 +80,6 @@ new Vue({
     data() {
         return {
             workInput: "",
-            workInput1: "",
             workList: [],
         }
     },

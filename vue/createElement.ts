@@ -5,6 +5,29 @@ import vue from "./main";
 
 export const componentsMap = new Map<string | number, Vue>();
 
+class VueEvnet {
+    eventMap = new Map<string, Array<Function>>();
+
+    $on(eventName: string, cb: Function) {
+        if (this.eventMap.has(eventName)) {
+            this.eventMap.get(eventName).push(cb);
+        } else {
+            this.eventMap.set(eventName, [cb]);
+        }
+    }
+
+    $emit(eventName: string, ...arg: any[]) {
+        if (this.eventMap.has(eventName)) {
+            this.eventMap.get(eventName).forEach(v => v(...arg));
+        }
+    }
+
+    $off(eventName: string, cb: Function) {
+        if (this.eventMap.has(eventName)) {
+            this.eventMap.get(eventName).filter(v => v != cb)
+        }
+    }
+}
 
 function initProps(props: Array<string>, parent: Vue, childVm: Vue) {
     props.forEach(v => {
@@ -13,9 +36,19 @@ function initProps(props: Array<string>, parent: Vue, childVm: Vue) {
                 return parent[v]
             },
             set() {
-                console.log("不可以修改父级属性");
+                console.error("不可以修改父级属性");
             }
         })
+    })
+}
+
+function initEvent(vue: Vue, event: vnodeOptions["vueEvent"]) {
+    const evnet = new VueEvnet();
+    vue.$on = evnet.$on.bind(evnet);
+    vue.$emit = evnet.$emit.bind(evnet);
+    vue.$off = evnet.$off.bind(evnet);
+    Object.keys(event).forEach(v => {
+        vue.$on(v, event[v])
     })
 }
 
@@ -40,6 +73,10 @@ export function createElement(this: Vue, tag: string, vnodeOptions: vnodeOptions
             } else {
                 this.$childre.push(component);
             }
+            if (vnodeOptions.vueEvent) {
+                initEvent(this, vnodeOptions.vueEvent);
+            }
+            this.$options.components[tag].mounted && this.$options.components[tag].mounted.call(component)
             Dep.target = component.$parent._watcher;
             return component.$vnode;
         }

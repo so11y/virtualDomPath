@@ -4,6 +4,9 @@ export type children = Pick<Ivnode, "children">["children"];
 export type domTag = Pick<Ivnode, "tag">["tag"];
 export type vnodeOptions = Omit<Ivnode, "tag" | "children"> & {
     componentsId?: string | number;
+    vueEvent?: {
+        [key: string]: (...arg: any[]) => any;
+    };
     props?: {
         [key: string]: any
     }

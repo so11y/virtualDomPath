@@ -7,7 +7,7 @@ import Watcher, { defineComputed, defineWatchOption } from "./Watcher";
 
 type vueStatic = {
     id: number;
-    (opt: VueOptions,cb?:Function): void
+    (opt: VueOptions, cb?: Function): void
 }
 
 
@@ -76,7 +76,9 @@ function initVue(vm: Vue, opt: VueOptions) {
     initOptions(vm);
     vm.$options.created && vm.$options.created.call(vm);
     mount(vm);
-    vm.$options.mounted && vm.$options.mounted.call(vm)
+    if (!vm.$id) {
+        vm.$options.mounted && vm.$options.mounted.call(vm)
+    }
 }
 
 
