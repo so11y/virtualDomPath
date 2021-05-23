@@ -13,6 +13,9 @@ overRewrite.forEach((key, index) => {
     Array.prototype[key] = function (...arg: any) {
         ordArrayFun[index].apply(this, arg);
         if (this.__ob__) {
+            /**
+             *  这里也是给写坏了 丑陋的不谈
+             */
             if (index == 0) {
                 if (Array.isArray(arg))
                     defineReactive(arg[0]);

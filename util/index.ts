@@ -1,8 +1,12 @@
 import { CreateRealDom, CreateRealTextDom, HtmlAttribute, HtmlAttributeTagList, addEventListener, updateAddEventListener } from "../types/dom";
 import { isEqual, isNoEqual, isString, Ivnode, pathClass, pathStyle, pathText, isArray, isNumber, pathDomProps, isEqualParse } from "../types/vnode";
-type children = Pick<Ivnode, "children">["children"];
-type domTag = Pick<Ivnode, "tag">["tag"];
-type vnodeOptions = Omit<Ivnode, "tag" | "children">
+export type children = Pick<Ivnode, "children">["children"];
+export type domTag = Pick<Ivnode, "tag">["tag"];
+export type vnodeOptions = Omit<Ivnode, "tag" | "children"> & {
+    props?: {
+        [key: string]: any
+    }
+}
 
 
 export class vnode {

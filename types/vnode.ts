@@ -69,7 +69,10 @@ export function pathText(ordVnode: vnode, newVnode: vnode) {
     let ordVnodeInstance = ordVnode.vnode;
     let newVnodeInstance = newVnode.vnode;
     ordVnodeInstance.children = newVnodeInstance.children;
-    ordVnodeInstance.realDom.innerText = ordVnodeInstance.children as string
+    //这里也坏了 不知为什么没有真实dom了
+    if (ordVnodeInstance.realDom) {
+        ordVnodeInstance.realDom.innerText = ordVnodeInstance.children as string
+    }
 }
 
 export function isEqual(after: any, before: any, key: string): boolean {

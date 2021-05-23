@@ -1,32 +1,25 @@
 import { VueOptions, Vue } from "../types/vueOptions";
 import { CreateVnode as h, render, CreateRootVnode as cr } from "../util";
+import { createElement } from "./createElement";
 import { defineReactive } from "./reactive";
 import Watcher, { defineComputed, defineWatchOption } from "./Watcher";
 
 
-function mount(vm: Vue) {
-    new Watcher(() => vm.$options.render.call(vm, h), vm).run();
-
-    //创建虚拟dom
-    vm.$vnode = vm._oldVnode;
-
-    //虚拟dom转真实node 并且添加到文档中
-    document.body.append(render(vm.$vnode))
+type vueStatic = {
+    id: number;
+    (opt: VueOptions,cb?:Function): void
 }
 
 
+function mount(vm: Vue) {
+    new Watcher(() => vm.$options.render.call(vm, createElement.bind(vm)), vm).run();
+    vm.$vnode = vm._oldVnode;
+    if (!vm.$id) {
+        //创建虚拟dom 虚拟dom转真实node 并且添加到文档中
+        document.body.append(render(vm.$vnode))
+    }
+}
 
-// function shallowDefineObserve<T extends Vue, G extends keyof VueOptions>(obj: T, key: G, ckey: string) {
-//     Object.defineProperty(obj, ckey, {
-//         enumerable: true,
-//         get() {
-//             return obj[key][ckey]
-//         },
-//         set(value) {
-//             obj[key][ckey] = value;
-//         }
-//     })
-// }
 
 function initMethods(vm: Vue) {
     Object.keys(vm.$options.methods).forEach(v => {
@@ -61,8 +54,6 @@ function initData(vm: Vue) {
     defineReactive(vm._data);
 }
 
-
-
 function initOptions(vm: Vue) {
     if (vm.$options.data) {
         initData(vm);
@@ -89,11 +80,17 @@ function initVue(vm: Vue, opt: VueOptions) {
 }
 
 
-function Vue(opt: VueOptions) {
+const vue: vueStatic = function (opt: VueOptions, cb?: Function) {
+    this.$id = vue.id++;
     if (opt.el || opt.render) {
+        // 这是hack 实现props的初始化
+        if (cb) cb(this);
         initVue(this, opt);
     }
 }
 
+vue.id = 0;
 
-export default Vue;
+
+export default vue;
+
