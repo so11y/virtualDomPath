@@ -23,6 +23,9 @@ new Vue({
                       h("div", {}, "我是子组件" + (this.workInput)),
                     h("childChild", {
                         componentsId:"childChild0",
+                    }, null),
+                    h("childChild", {
+                        componentsId:"childChild1",
                     }, null)
                 ])
             },
@@ -38,10 +41,23 @@ new Vue({
                 componentsId:"child0",
                 props: ["workInput"]
             }, null),
-            h("h1", {}, this.workInput),
+            h("h2", {},"2个watch需要更新"+ this.workInput),
+            h("h1", {},"1个watch需要更新"+ this.workInput1),
             h("input", {
                 domProps: {
-                    value: this.workInput
+                    value: this.workInput1,
+                    placeholder:"更新父级"
+                },
+                on: {
+                    input: (e: InputEvent) => {
+                        this.workInput1 = (e.target as HTMLInputElement).value;
+                    },
+                }
+            }),
+            h("input", {
+                domProps: {
+                    value: this.workInput,
+                    placeholder:"更新父子级"
                 },
                 on: {
                     input: (e: InputEvent) => {
@@ -85,6 +101,7 @@ new Vue({
     data() {
         return {
             workInput: "",
+            workInput1: "",
             workList: [],
         }
     },

@@ -19,7 +19,7 @@ function initProps(props: Array<string>, parent: Vue, childVm: Vue) {
     })
 }
 
-export function createElement(this: Vue, tag: string, vnodeOptions: vnodeOptions & { props?: Array<string> } = {}, children: children) {
+export function createElement(this: Vue, tag: string, vnodeOptions: vnodeOptions = {}, children: children) {
     if (this.$options.components?.[tag]) {
         //每一个vue只控制自己的渲染如果需要更新将直接复用前一次渲染的实力
         if (!componentsMap.has(vnodeOptions.componentsId)) {
@@ -31,7 +31,7 @@ export function createElement(this: Vue, tag: string, vnodeOptions: vnodeOptions
                     initProps(this.$options.components[tag].props, this, childVm);
                 }
             });
-            componentsMap.set(vnodeOptions.componentsId,component);
+            componentsMap.set(vnodeOptions.componentsId, component);
             component.$parent = this;
 
             //这里也是给写坏了, 这里的工作应该在一开始初始化的时候就已经创建了这个对象
