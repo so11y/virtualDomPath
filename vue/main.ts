@@ -29,7 +29,7 @@ function initMethods(vm: Vue) {
         Object.defineProperty(vm, v, {
             enumerable: true,
             get() {
-                return vm.$options.methods[v]
+                return vm.$options.methods[v].bind(vm)
             },
             set(value) {
                 vm.$options.methods[v] = value;

@@ -3,82 +3,80 @@ import Vue from "./vue/main";
 
 new Vue({
     components: {
-        "child": {
+        inputCom: {
             /**
              * 好麻烦 这里图省事直接声明需要使用父级的什么属性
              */
             props: ["workInput"],
             render(h) {
-                return h("div", {}, [
-                    h("div", {}, "我是子组件" + (this.workInput)),
-                ])
-            },
-            mounted() {
-                console.log("子组件挂载", this);
-                this.$on("click", () => {
-                    console.log("你好");
+                return h("input", {
+                    domProps: {
+                        value: this.workInput,
+                        placeholder: "输入内容~"
+                    },
+                    on: {
+                        input: (e: InputEvent) => {
+                            this.$emit("setText", (e.target as HTMLInputElement).value);
+                        },
+                        keydown: (e: KeyboardEvent) => {
+                            if (e.keyCode == 13) {
+                                this.$emit("add");
+                                this.$emit("setText", "");
+                            }
+                        }
+                    }
                 })
-                setTimeout(() => {
-                    this.$emit("click", 6666);
-                }, 2000)
+            },
+        },
+        listCom: {
+            props: ["workList"],
+            render(h) {
+                return h("div", {}, this.workList.map((v, i) => h("h6", {}, [
+                    h("span", {
+                        domProps: {
+                            title: v.value
+                        },
+                        class: v.type ? ['undo', 'text'] : ['todo', 'text']
+                    }, v.value),
+                    h("button", {
+                        on: {
+                            click: () => {
+                                this.$emit("splice",i);
+                            }
+                        }
+                    }, "删除"),
+                    h("button", {
+                        on: {
+                            click: () => {
+                                this.$emit("reverse",i,v);
+
+                            }
+                        }
+                    }, v.type ? '已完成' : '未完成'),
+                ])))
             }
         }
     },
     render(h) {
         return h("div", {}, [
             h("h1", {}, "手写Vue已经完成的功能 TodoList"),
-            h("child", {
+            h("inputCom", {
                 vueEvent: {
-                    click: (v) => {
-                        this.workInput = v;
-                    }
+                    setText: this.setText,
+                    add: this.add
                 },
                 componentsId: "child0",
                 props: ["workInput"]
             }, null),
-            h("input", {
-                domProps: {
-                    value: this.workInput,
-                    placeholder: "更新父子级"
+            h("listCom", {
+                vueEvent: {
+                    splice: this.splice,
+                    reverse:this.reverse,
                 },
-                on: {
-                    input: (e: InputEvent) => {
-                        this.workInput = (e.target as HTMLInputElement).value;
-                    },
-                    keydown: (e: KeyboardEvent) => {
-                        if (e.keyCode == 13) {
-                            this.add();
-                            this.workInput = "";
-                        }
-                    }
-                }
-            }),
-            ...this.workList.map((v, i) => h("h6", {}, [
-                h("span", {
-                    domProps: {
-                        title: v.value
-                    },
-                    class: v.type ? ['undo', 'text'] : ['todo', 'text']
-                }, v.value),
-                h("button", {
-                    on: {
-                        click: () => {
-                            this.workList.splice(i, 1);
-                        }
-                    }
-                }, "删除"),
-                h("button", {
-                    on: {
-                        click: () => {
-                            this.workList[i].type = !v.type;
-                        }
-                    }
-                }, v.type ? '已完成' : '未完成'),
-            ]))
+                componentsId: "listCom0",
+                props: ["workList"]
+            }, null),
         ])
-    },
-    mounted() {
-        console.log("父组件挂载", this);
     },
     data() {
         return {
@@ -90,6 +88,15 @@ new Vue({
         this.workList = JSON.parse(localStorage.getItem("work"))
     },
     methods: {
+        reverse(i,v){
+            this.workList[i].type = !v.type;
+        },
+        splice(i){
+            this.workList.splice(i, 1);
+        },
+        setText(v) {
+            this.workInput = v;
+        },
         add() {
             if (this.workInput) {
                 this.workList.push({
