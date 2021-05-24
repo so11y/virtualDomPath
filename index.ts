@@ -42,6 +42,7 @@ new Vue({
                         on: {
                             click: () => {
                                 this.$emit("splice",i);
+                                console.log(this);
                             }
                         }
                     }, "删除"),
@@ -59,7 +60,7 @@ new Vue({
     },
     render(h) {
         return h("div", {}, [
-            h("h1", {}, "手写Vue已经完成的功能 TodoList"),
+            h("h1", {}, "手写Vue已经完成的功能 TodoList"+(this.gogo)),
             h("inputCom", {
                 vueEvent: {
                     setText: this.setText,
@@ -81,7 +82,21 @@ new Vue({
     data() {
         return {
             workInput: "",
+            workInput22: "222",
             workList: [],
+        }
+    },
+    computed:{
+        gogo(){
+            if(this.workInput == "11"){
+                return this.workInput22;
+            }
+            return this.workInput;
+        }
+    },
+    watch:{
+        gogo(pp){
+            console.log('??',this);
         }
     },
     created() {

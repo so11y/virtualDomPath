@@ -14,6 +14,11 @@ export default class Dep {
         this.id = Dep.DeptId++;
     }
 
+    //释放依赖
+    release(watchId: number) {
+        this.subs = this.subs.filter(v => v.id != watchId)
+    }
+
     append() {
         if (!this.subs.length || this.subs.every(v => v.id !== Dep.target.id)) {
             this.subs.push(Dep.target);

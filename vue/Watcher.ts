@@ -8,8 +8,8 @@ const workQueue: Watcher[] = [];
 function updateQuene() {
     Promise.resolve().then(() => {
         if (workQueue.length) {
-            console.log("当前需要执行的异步更新队列长度", workQueue.length);
-            console.time("执行当前所有队列watch时间");
+            console.log("当前需要执行的异步更新队列长度", workQueue.length, workQueue);
+            console.time("执行当前所有队列watch时间",);
             while (workQueue.length) {
                 const watch = workQueue.shift();
                 if (watch.renderWatcher) {
@@ -40,7 +40,11 @@ export default class Watcher {
     updateOther() { }
 
     updateDiff() {
+        this.deps.forEach(v => v.release(this.id));
+        this.deps = [];
+        Dep.target = this;
         diffVnodePath(this.vm.$vnode, this.cb())
+        Dep.target = null;
     }
 
     update() {
@@ -75,12 +79,15 @@ class ComputedWatcher extends Watcher {
     }
     updateOther() {
         this.dirty = true;
+        //通知监听计算属性的watch更新
         if (this.depRef) {
             this.depRef.notify();
         }
     }
 
     run() {
+        this.deps.forEach(v => v.release(this.id));
+        this.deps = [];
         Dep.target = this;
         this.value = this.cb();
         this.dirty = false;
@@ -107,6 +114,7 @@ export function defineComputed(vm: Vue) {
                         watch.frist = false;
                     }
                     if (watch.dirty) {
+                        depRef.append();
                         watch.run();
                         if (watch.vm._watcher) {
                             Dep.target = watch.vm._watcher;
@@ -115,7 +123,7 @@ export function defineComputed(vm: Vue) {
                     }
                     return watch.value
                 },
-                set(){
+                set() {
                     console.warn("计算属性暂不支持set");
                 }
             })
@@ -135,7 +143,11 @@ class WatchOption extends ComputedWatcher {
         this.key = key;
     }
     updateOther() {
-        this.cb(this.vm[this.key], 2);
+        this.deps.forEach(v => v.release(this.id));
+        this.deps = [];
+        Dep.target = this;
+        this.cb(this.vm[this.key]);
+        Dep.target = null;
     }
 }
 
