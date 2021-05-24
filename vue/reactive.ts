@@ -12,6 +12,7 @@ const ordArrayFun = overRewrite.map(key => Array.prototype[key])
 overRewrite.forEach((key, index) => {
     Array.prototype[key] = function (...arg: any) {
         ordArrayFun[index].apply(this, arg);
+
         if (this.__ob__) {
             /**
              *  这里也是给写坏了 丑陋的不谈
@@ -79,7 +80,9 @@ function walkDefineReactive<T extends Observe>(data: T, key: string) {
         set(newValue) {
             if (newValue != ordValue) {
                 ordValue = newValue;
-                if (isObject(ordValue)) {
+
+                //新赋值的就是一个向右式对象则不重新创建
+                if (!ordValue.__ob__ && isObject(ordValue)) {
                     defineReactive(ordValue)
                 }
                 dep.notify();
