@@ -16,7 +16,7 @@ new Vue({
             mounted() {
                 console.log("子组件挂载", this);
                 this.$on("click", () => {
-                    console.log("fuck you");
+                    console.log("你好");
                 })
                 setTimeout(() => {
                     this.$emit("click", 6666);
