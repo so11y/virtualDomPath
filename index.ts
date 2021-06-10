@@ -1,4 +1,4 @@
-import Vue, { difneVue } from "./vue/main";
+import Vue from "./vue/main";
 
 // new Vue({
 //     components: {
