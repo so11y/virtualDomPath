@@ -43,7 +43,7 @@ function walkAttribute(vnode: Ivnode): HtmlAttribute {
     let attribute: HtmlAttribute = {};
     Object.keys(vnode).forEach(element => {
         if (HtmlAttributeTagList.includes(element)) {
-            attribute[element] = vnode[element]
+            attribute[element as keyof HtmlAttribute] = (vnode[element as keyof Ivnode] as any)
         }
     });
     return attribute;

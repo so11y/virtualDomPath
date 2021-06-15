@@ -2,32 +2,33 @@ import { isObject } from "../util/type";
 import Dep from "./Dep";
 
 interface Observe {
-    __ob__?: Dep
+    __ob__?: Dep;
+    [key: string]: any
 }
 
 const overRewrite = ["push", "splice"];
 
-const ordArrayFun = overRewrite.map(key => Array.prototype[key])
+const ordArrayFun = overRewrite.map(key => Array.prototype[key as keyof typeof Array.prototype])
 
 overRewrite.forEach((key, index) => {
-    Array.prototype[key] = function (...arg: any) {
+    Array.prototype[key as keyof typeof Array.prototype] = function (...arg: any) {
         ordArrayFun[index].apply(this, arg);
 
-        if (this.__ob__) {
+        if ((this as Observe).__ob__) {
             /**
              *  这里也是给写坏了 丑陋的不谈
              */
             if (index == 0) {
                 if (Array.isArray(arg))
                     defineReactive(arg[0]);
-                Dep.target = this.__ob__.subs.find(v => v.renderWatcher);
+                Dep.target = (this as Observe).__ob__.subs.find((v: any) => v.renderWatcher);
                 if (Array.isArray(arg))
                     arg[0].__ob__.append();
                 else
                     arg.__ob__.append();
                 Dep.target = null;
             }
-            this.__ob__.notify();
+            (this as Observe).__ob__.notify();
         }
     }
 })

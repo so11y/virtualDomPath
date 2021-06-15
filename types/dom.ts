@@ -38,13 +38,13 @@ export function CreateRealDom(tag: string, readHtmlAttribute: HtmlAttribute): HT
 
 export function addEventListener(event: Partial<Ievent>, dom: HTMLElement) {
     Object.keys(event).forEach((eventName) => {
-        dom.addEventListener(eventName, event[eventName])
+        dom.addEventListener(eventName, event[eventName as keyof Ievent])
     })
 }
 
 function removeAddEventListener(event: Partial<Ievent>, dom: HTMLElement) {
     Object.keys(event).forEach((eventName) => {
-        dom.removeEventListener(eventName, event[eventName])
+        dom.removeEventListener(eventName, event[eventName as keyof Ievent])
     })
 }
 

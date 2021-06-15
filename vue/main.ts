@@ -5,10 +5,10 @@ import { defineReactive } from "./reactive";
 import Watcher, { defineComputed, defineWatchOption } from "./Watcher";
 
 
-type vueStatic = {
-    id: number;
-    (opt: VueOptions, cb?: Function): void
-}
+// interface vueStatic extends Function {
+//     id: number;
+//     new(opt: VueOptions, cb?: Function): Vue
+// }
 
 
 function mount(vm: Vue) {
@@ -24,7 +24,7 @@ function mount(vm: Vue) {
 function initMethods(vm: Vue) {
     Object.keys(vm.$options.methods).forEach(v => {
         if (!(v in vm)) {
-            vm.$options.methods[v].bind(this);
+            vm.$options.methods[v].bind(vm);
         }
         Object.defineProperty(vm, v, {
             enumerable: true,
@@ -82,7 +82,9 @@ function initVue(vm: Vue, opt: VueOptions) {
 }
 
 
-const vue: vueStatic = function (opt: VueOptions, cb?: Function) {
+
+
+const vue = function (this: Vue, opt: VueOptions, cb?: Function) {
     this.$id = vue.id++;
     if (opt.el || opt.render) {
         // 这是hack 实现props的初始化
@@ -95,4 +97,5 @@ vue.id = 0;
 
 
 export default vue;
+
 

@@ -1,0 +1,16 @@
+
+
+export default {
+    data(){
+        return {
+            a:1010,
+            b:2020
+        }
+    },
+    render(h) {
+        return h("div",{
+            style:"color:red"
+        },this.a + this.b)
+    }
+}
+

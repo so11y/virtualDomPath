@@ -1,0 +1,26 @@
+{
+    "compilerOptions": {
+        "target": "esnext",
+        "module": "esnext",
+        "strict": false,
+        "jsx": "preserve",
+        "importHelpers": true,
+        "moduleResolution": "node",
+        "experimentalDecorators": true,
+        "skipLibCheck": true,
+        "strictNullChecks": false,
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true,
+        "sourceMap": true,
+        "noImplicitAny":false,
+        "baseUrl": ".",
+        "paths": {},
+    },
+    "include": [
+        "./",
+    ],
+    "exclude": [
+        "node_modules",
+        "./jsx"
+    ]
+}

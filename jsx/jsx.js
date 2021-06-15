@@ -1,6 +1,6 @@
 module.exports = ({ types: t }) => {
     const switchType = (node, t) => {
-      return  [
+        return [
             t.isExpression,
             t.isStringLiteral,
             t.isNumericLiteral
@@ -38,9 +38,12 @@ module.exports = ({ types: t }) => {
                 return v;
             }
         })
-        if (child.length == 1 && switchType(child[0].arguments[2],t)) {
-            return child[0].arguments[2];
+        if (child[0].arguments) {
+            if (child.length == 1 && switchType(child[0].arguments[2], t)) {
+                return child[0].arguments[2];
+            }
         }
+
         return t.arrayExpression(child);
     }
     return {

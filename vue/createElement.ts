@@ -64,7 +64,7 @@ function initEvent(vue: Vue, event: vnodeOptions["vueEvent"]) {
 }
 
 export function createElement(this: Vue, tag: string, vnodeOptions: vnodeOptions = {}, children: children) {
-    if (this.$options.components?.[tag]) {
+    if (this.$options.components &&  this.$options.components[tag]) {
         //每一个vue只控制自己的渲染如果需要更新将直接复用前一次渲染的实力
         if (!componentsMap.has(vnodeOptions.componentsId)) {
             //这里也是有问题,不能直接new就把实例赋值给compoents 也要来一个Vue.extends()方法;
