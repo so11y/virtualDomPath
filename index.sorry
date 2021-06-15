@@ -8,9 +8,7 @@ export default {
         }
     },
     render(h) {
-        return h("div",{
-            style:"color:red"
-        },this.a + this.b)
+        return <div>{this.a + this.b}</div>
     }
 }
 
