@@ -1,4 +1,4 @@
 declare module "*.sorry" {
-    import { VueOptions } from "../types/vueOptions";
-    export default VueOptions;
+    type VueOptions = import("./types/vueOptions").VueOptions;
+    export default {} as VueOptions;
 }
