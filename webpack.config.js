@@ -28,13 +28,13 @@ module.exports = {
     },
     plugins: [
         new HtmlWebpackPlugin({
-            filename: "main.html",
+            filename: "index.html",
         }),
     ],
     devServer: {
         contentBase: resolve(__dirname, 'dist'),
         progress: true,
         port: 5050,
-        hotOnly: true
+        hot: true
     }
 }
