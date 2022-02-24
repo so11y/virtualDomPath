@@ -1,6 +1,6 @@
 import Vue from "./vue/main";
 
-console.log("---");
+console.log("-44--");
 // import app from "./index.sorry";
 
 // console.log(app);
