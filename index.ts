@@ -1,4 +1,6 @@
 import Vue from "./vue/main";
+
+console.log("---");
 // import app from "./index.sorry";
 
 // console.log(app);
